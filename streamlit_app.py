@@ -2,28 +2,54 @@ import streamlit as st
 import pickle
 import urllib.request
 import os
+import requests
 
-# Function to download and load .pkl files
-@st.cache_resource
-def load_pickle(file_url, file_name):
-    if not os.path.exists(file_name):
-        # Download file if not already available locally
-        urllib.request.urlretrieve(file_url, file_name)
-    with open(file_name, 'rb') as file:
-        return pickle.load(file)
+# Function to download a file from Google Drive
+def download_from_google_drive(file_id, destination):
+    base_url = "https://drive.google.com/uc?export=download"
+    session = requests.Session()
+    response = session.get(base_url, params={'id': file_id}, stream=True)
+    token = get_confirm_token(response)
+    if token:
+        params = {'id': file_id, 'confirm': token}
+        response = session.get(base_url, params=params, stream=True)
+    save_response_content(response, destination)
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            return value
+    return None
+
+def save_response_content(response, destination):
+    chunk_size = 32768
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(chunk_size):
+            if chunk:
+                f.write(chunk)
 
 # File paths and URLs
-# Use the direct GitHub URL for the movie_list.pkl
 movie_list_url = "https://raw.githubusercontent.com/sarrahhwaeell/Movie-Recommendation-System/main/movie_list.pkl"
-movie_list_path = "movie_list.pkl"  # Local path for caching
-
-# Use a direct link for the large similarity_matrix.pkl file (e.g., GitHub release, Google Drive, etc.)
-similarity_matrix_url = "https://example.com/path_to_similarity_matrix.pkl"  # Replace with your actual link
+movie_list_path = "movie_list.pkl"
 similarity_matrix_path = "similarity_matrix.pkl"
 
+# Google Drive file ID for similarity_matrix.pkl
+similarity_matrix_file_id = "14d1ajYL7uOI_YBc2zQLRMLRU2mDCn4kU"
+
+# Function to load .pkl files
+@st.cache_resource
+def load_pickle(file_path, url=None, google_drive_id=None):
+    if not os.path.exists(file_path):
+        if google_drive_id:
+            download_from_google_drive(google_drive_id, file_path)
+        elif url:
+            urllib.request.urlretrieve(url, file_path)
+    with open(file_path, 'rb') as file:
+        return pickle.load(file)
+
 # Load the .pkl files
-movie_list = load_pickle(movie_list_url, movie_list_path)
-similarity_matrix = load_pickle(similarity_matrix_url, similarity_matrix_path)
+movie_list = load_pickle(movie_list_path, url=movie_list_url)
+similarity_matrix = load_pickle(similarity_matrix_path, google_drive_id=similarity_matrix_file_id)
 
 # Streamlit app
 st.title('Movie Recommendation System')
