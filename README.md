@@ -29,8 +29,6 @@ This **Movie Recommendation System** allows users to receive personalized movie 
 - **TF-IDF (Term Frequency-Inverse Document Frequency)**: Implemented vectorization techniques such as TF-IDF to convert text data into numerical features, improving the recommendation accuracy by capturing the importance of terms in movie descriptions.
 
 
-2. Install the required dependencies:
-bash
-pip install -r requirements.txt
+
 
 
