@@ -5,20 +5,23 @@ import os
 
 # Function to download and load .pkl files from URLs or local paths
 @st.cache_resource
-def load_pickle(file_url, file_name):
-    if not os.path.exists(file_name):
-        urllib.request.urlretrieve(file_url, file_name)
-    with open(file_name, 'rb') as file:
-        return pickle.load(file)
+def load_pickle(file_url=None, file_name=None):
+    if file_url:  # If a URL is provided, download the file
+        if not os.path.exists(file_name):
+            urllib.request.urlretrieve(file_url, file_name)
+    if file_name:  # Load from a local file
+        with open(file_name, 'rb') as file:
+            return pickle.load(file)
+    raise ValueError("Both file_url and file_name are missing!")
 
-# URLs for your .pkl files
-movie_list_path = "movies_list.pkl"  # This is directly in your GitHub repo
+# Paths and URLs for your .pkl files
+movie_list_path = "movies_list.pkl"  # Local file path
 similarity_matrix_url = "https://github.com/sarrahhwaeell/Movie-Recommendation-System/releases/download/v1.0.0-initial-release/similarity_matrix.pkl"
 similarity_matrix_path = "similarity_matrix.pkl"
 
 # Load .pkl files
-movie_list = load_pickle(movie_list_path, movie_list_path)
-similarity_matrix = load_pickle(similarity_matrix_url, similarity_matrix_path)
+movie_list = load_pickle(file_name=movie_list_path)  # Local file for movies_list.pkl
+similarity_matrix = load_pickle(file_url=similarity_matrix_url, file_name=similarity_matrix_path)  # URL for similarity_matrix.pkl
 
 # Streamlit app
 st.title('Movie Recommendation System')
