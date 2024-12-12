@@ -29,8 +29,7 @@ This Movie Recommendation System allows users to receive personalized movie sugg
 - **scikit-learn** (machine learning algorithms)
 - **numpy** (numerical operations)
 - **matplotlib & seaborn** (visualization)
-- **Flask** (for web application interface)
-- **Jupyter Notebooks** (for development and analysis)
+- **Streamlit** (for web application interface)
 
 ## Installation Instructions
 
@@ -39,5 +38,5 @@ To run this project locally, follow these steps:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/Movie-Recommendation-System.git
+git clone https://github.com/sarrahhwaeell/Movie-Recommendation-System.git
 cd Movie-Recommendation-System
