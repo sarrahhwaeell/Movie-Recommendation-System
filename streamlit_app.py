@@ -30,7 +30,7 @@ movie_list = load_pickle(movie_list_path, movie_list_path)
 similarity_matrix = load_pickle(similarity_matrix_url, similarity_matrix_path)
 
 # Streamlit app
-st.header('Movie Recommendation System Using Machine Learning')
+st.header('Movie Recommendation System')
 
 movie_titles = movie_list['title'].values
 selected_movie = st.selectbox(
