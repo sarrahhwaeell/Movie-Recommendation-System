@@ -2,32 +2,41 @@ import streamlit as st
 import pickle
 import urllib.request
 import os
+import requests
 
 # Function to download and load .pkl files from URLs or local paths
 @st.cache_resource
-def load_pickle(file_url=None, file_name=None):
-    if file_url:  # If a URL is provided, download the file
-        if not os.path.exists(file_name):
-            urllib.request.urlretrieve(file_url, file_name)
-    if file_name:  # Load from a local file
-        with open(file_name, 'rb') as file:
-            return pickle.load(file)
-    raise ValueError("Both file_url and file_name are missing!")
+def load_pickle(file_url, file_name):
+    if not os.path.exists(file_name):
+        urllib.request.urlretrieve(file_url, file_name)
+    with open(file_name, 'rb') as file:
+        return pickle.load(file)
 
-# Paths and URLs for your .pkl files
-movie_list_url = "https://github.com/sarrahhwaeell/Movie-Recommendation-System/releases/download/v1.0.0-initial-release/movie_list.pkl"
-movie_list_path = "movies_list.pkl"  # Local filename
+def fetch_poster(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US"
+    data = requests.get(url)
+    data = data.json()
+    poster_path = data.get('poster_path', '')
+    full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
+    return full_path
+
+# URLs for your .pkl files
+movie_list_path = "movies_list.pkl"  # This is directly in your GitHub repo
 similarity_matrix_url = "https://github.com/sarrahhwaeell/Movie-Recommendation-System/releases/download/v1.0.0-initial-release/similarity_matrix.pkl"
 similarity_matrix_path = "similarity_matrix.pkl"
 
 # Load .pkl files
-movie_list = load_pickle(file_url=movie_list_url, file_name=movie_list_path)  # Download and load movies_list.pkl
-similarity_matrix = load_pickle(file_url=similarity_matrix_url, file_name=similarity_matrix_path)  # Download and load similarity_matrix.pkl
+movie_list = load_pickle(movie_list_path, movie_list_path)
+similarity_matrix = load_pickle(similarity_matrix_url, similarity_matrix_path)
 
 # Streamlit app
-st.title('Movie Recommendation System')
+st.header('Movie Recommendation System Using Machine Learning')
 
-movie_name = st.text_input('Enter a Movie Name')
+movie_titles = movie_list['title'].values
+selected_movie = st.selectbox(
+    "Type or select a movie from the dropdown",
+    movie_titles
+)
 
 # Recommendation logic
 def recommend(movie_name):
@@ -36,17 +45,38 @@ def recommend(movie_name):
         similarity_scores = list(enumerate(similarity_matrix[movie_idx]))
         similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
 
-        recommended_movies = []
-        for i in range(1, 6):
-            movie_idx = similarity_scores[i][0]
-            recommended_movies.append(movie_list['title'].iloc[movie_idx])
+        recommended_movie_names = []
+        recommended_movie_posters = []
+        for i in similarity_scores[1:6]:
+            recommended_movie_names.append(movie_list['title'].iloc[i[0]])
+            # Placeholder for poster fetching logic (assuming movie_id is part of the dataset)
+            movie_id = movie_list.iloc[i[0]].get('movie_id', None)
+            if movie_id:
+                recommended_movie_posters.append(fetch_poster(movie_id))
+            else:
+                recommended_movie_posters.append("https://via.placeholder.com/150")  # Default poster
 
-        return recommended_movies
+        return recommended_movie_names, recommended_movie_posters
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return [f"Error: {str(e)}"], ["https://via.placeholder.com/150"] * 5
 
-if movie_name:
-    recommendations = recommend(movie_name)
-    st.write(f"Recommendations for '{movie_name}':")
-    st.write(recommendations)
+if st.button('Show Recommendation'):
+    recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        st.text(recommended_movie_names[0])
+        st.image(recommended_movie_posters[0])
+    with col2:
+        st.text(recommended_movie_names[1])
+        st.image(recommended_movie_posters[1])
+    with col3:
+        st.text(recommended_movie_names[2])
+        st.image(recommended_movie_posters[2])
+    with col4:
+        st.text(recommended_movie_names[3])
+        st.image(recommended_movie_posters[3])
+    with col5:
+        st.text(recommended_movie_names[4])
+        st.image(recommended_movie_posters[4])
