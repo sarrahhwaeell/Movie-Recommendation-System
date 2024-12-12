@@ -44,8 +44,8 @@ To run this project locally, follow these steps:
 git clone https://github.com/sarrahhwaeell/Movie-Recommendation-System.git
 cd Movie-Recommendation-System
 
-
-## Data Source
-The movie metadata used for this project is sourced from the TMDB Movie Metadata Dataset on Kaggle. This dataset includes detailed movie information such as genres, cast, crew, and plot descriptions.
+2. Install the required dependencies:
+bash
+pip install -r requirements.txt
 
 
