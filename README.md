@@ -2,15 +2,9 @@
 
 This project implements a **Movie Recommendation System** that suggests movies to users based on their preferences using various recommendation algorithms such as **Collaborative Filtering**, **Content-Based Filtering**, and **Hybrid Recommender Systems**. It leverages machine learning techniques and a movie dataset to provide personalized movie recommendations.
 
-## Table of Contents
+## Data source 
+The TMDB 5000 Movie Dataset from kaggle https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata 
 
-- [Project Description](#project-description)
-- [Technologies Used](#technologies-used)
-- [Installation Instructions](#installation-instructions)
-- [How to Use](#how-to-use)
-- [Data Source](#data-source)
-- [License](#license)
-- [Contributors](#contributors)
 
 ## Project Description
 
@@ -34,15 +28,6 @@ This **Movie Recommendation System** allows users to receive personalized movie 
 - **Natural Language Processing (NLP)**: Applied NLP techniques for text processing to convert movie metadata such as movie descriptions into numerical features.
 - **TF-IDF (Term Frequency-Inverse Document Frequency)**: Implemented vectorization techniques such as TF-IDF to convert text data into numerical features, improving the recommendation accuracy by capturing the importance of terms in movie descriptions.
 
-## Installation Instructions
-
-To run this project locally, follow these steps:
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/sarrahhwaeell/Movie-Recommendation-System.git
-cd Movie-Recommendation-System
 
 2. Install the required dependencies:
 bash
